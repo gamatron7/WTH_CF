@@ -31,3 +31,12 @@ jobs:
           template: ./config/main.bicep
           parameters: namePrefix=${{ env.prefix }} location=EastUS
         continue-on-error: true
+
+      - name: Build and deploy Container App
+        uses: azure/container-apps-deploy-action@v1
+        with:
+           appSourcePath: ${{ github.workspace }}
+           acrName: ${{ env.prefix }}acr 
+           resourceGroup: ${{ vars.RESOURCE_GROUP_NAME }}
+           containerAppName: ${{ env.prefix }}containerapp
+           containerAppEnvironment: ${{ env.prefix }}containerappenvironment
