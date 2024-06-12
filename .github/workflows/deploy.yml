@@ -1,0 +1,33 @@
+name: Deploy Infrastructure
+
+# Este flujo de trabajo se ejecuta manualmente
+on:
+ push: 
+  branches:
+    - develop
+ workflow_dispatch:
+env:
+ prefix: 'gama1'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CREDENCIALES }}
+
+   
+      - name: Deploy Bicep template for prod
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ vars.RESOURCE_GROUP_NAME }}
+          template: ./config/main.bicep
+          parameters: namePrefix=${{ env.prefix }} location=EastUS
+        continue-on-error: true
